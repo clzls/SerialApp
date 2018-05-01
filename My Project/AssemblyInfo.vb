@@ -8,11 +8,11 @@ Imports System.Runtime.InteropServices
 
 '查看程序集特性的值
 
-<Assembly: AssemblyTitle("SerialApp")>
+<Assembly: AssemblyTitle("中国代表二队 小车配套软件")>
 <Assembly: AssemblyDescription("")>
-<Assembly: AssemblyCompany("")>
-<Assembly: AssemblyProduct("SerialApp")>
-<Assembly: AssemblyCopyright("Copyright ©  2018")>
+<Assembly: AssemblyCompany("芯动计划二期 中国代表二队")>
+<Assembly: AssemblyProduct("中国代表二队配套软件")>
+<Assembly: AssemblyCopyright("Copyright 中国代表二队 ©  2018")>
 <Assembly: AssemblyTrademark("")>
 
 <Assembly: ComVisible(False)>
