@@ -1,9 +1,12 @@
 ﻿Imports System.IO.Ports
 
+#Const DisableXInputSupport = 0
+
 Public Class frmMain
-    Friend errcode As String
+#If DisableXInputSupport = 0 Then
     Public ctrl As SharpDX.XInput.Controller
     Public state As SharpDX.XInput.State
+#End If
 
     Private Sub 退出EToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles 退出EToolStripMenuItem.Click, 退出XToolStripMenuItem.Click
         If SerialPort1.IsOpen Then SerialPort1.Close()
@@ -31,12 +34,9 @@ Public Class frmMain
     Private Sub SerialPort1_DataReceived(sender As Object, e As SerialDataReceivedEventArgs) Handles SerialPort1.DataReceived
         On Error GoTo Motherfucker
         If RawDataListening Then Exit Sub
-        Select Case nowConf
-            Case Configs.v1_0_Dare
-                DataProcess_v1_0(e)
-            Case Configs.v1_1_Uno
 
-        End Select
+        If SerialPort1.BytesToRead < nowConf.DatapackLength Then Exit Sub
+        nowConf.DataProcess(SerialPort1, e)
 
 Motherfucker:
     End Sub
@@ -47,18 +47,24 @@ Motherfucker:
 
     Private Sub frmMain_KeyPress(sender As Object, e As KeyPressEventArgs) Handles Me.KeyPress
         If SerialRunning Then
-            Select Case e.KeyChar
-                Case "w"
-                    SerialPort1.Write("u")
-                Case "a"
-                    SerialPort1.Write("l")
-                Case "s"
-                    SerialPort1.Write("d")
-                Case "d"
-                    SerialPort1.Write("r")
-                Case "0" To "9", " "
-                    SerialPort1.Write(e.KeyChar)
-            End Select
+            Try
+                Select Case e.KeyChar
+                    Case "w"c, "W"c
+                        SerialPort1.Write("u")
+                    Case "a"c, "A"c
+                        SerialPort1.Write("l")
+                    Case "s"c, "S"c
+                        SerialPort1.Write("d")
+                    Case "d"c, "D"c
+                        SerialPort1.Write("r")
+                    Case "0"c To "9"c, " "c
+                        SerialPort1.Write(e.KeyChar)
+                End Select
+            Catch ex As IO.IOException
+                My.Settings.ErrorMsg = ex.Message
+            Catch ex As Exception
+                MessageBox.Show(ex.Message, "错误：" & ex.Source, MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
         End If
     End Sub
 
@@ -94,24 +100,65 @@ Motherfucker:
 
     Private Sub tmrMain_Tick(sender As Object, e As EventArgs) Handles tmrMain.Tick
         'Refreshing the dashboard
-        lblCS.Text = My.Settings.CarSpeed
-        lblMD.Text = My.Settings.MotorDuty
-        lblSA.Text = My.Settings.SteerAngle
-        lblFD.Text = My.Settings.EchoLength
-        lblYaw.Text = My.Settings.Yaw
-        tsslErrChar.Text = errcode
+        With My.Settings
+            lblCS.Text = .CarSpeed
+            lblMD.Text = .MotorDuty
+            lblSA.Text = .SteerAngle
+            lblFD.Text = .EchoLength
+            lblYW.Text = .Yaw
+            tsslErrChar.Text = .ErrorMsg
+        End With
 
+        'Serial detection
         SerialRunning = SerialPort1.IsOpen()
+        With tsslSerialStatus
+            If SerialRunning Then
+                .Text = My.Resources.strSerialRunning
+                .ForeColor = Color.Black
+            Else
+                .Text = My.Resources.strSerialDisabled
+                .ForeColor = Color.Red
+            End If
+        End With
 
+#If DisableXInputSupport = 0 Then
+        'Game controller detection
+        If My.Settings.EnableGamepadSupport Then
+            If ctrl.IsConnected Then
+                tsslHardwareDetect.Text = "DirectX 兼容手柄"
+            Else
+                tsslHardwareDetect.Text = "无硬件"
+            End If
+        Else
+            tsslHardwareDetect.Text = "硬件支持已关闭"
+        End If
+#End If
+
+        'Freeze unused controls
+        lblCST.Enabled = SerialRunning And nowConf.IsCarSpeed
+        lblYWT.Enabled = SerialRunning And nowConf.IsYaw
+        lblSAT.Enabled = SerialRunning And nowConf.IsSteerAngle
+        lblFDT.Enabled = SerialRunning And nowConf.IsEchoLength
+        lblMDT.Enabled = SerialRunning And nowConf.IsMotorDuty
+
+        lblCS.Enabled = lblCST.Enabled
+        lblYW.Enabled = lblYWT.Enabled
+        lblSA.Enabled = lblSAT.Enabled
+        lblFD.Enabled = lblFDT.Enabled
+        lblMD.Enabled = lblMDT.Enabled
+
+#If DisableXInputSupport = 0 Then
+        'Game controller signal generating
         If SerialRunning And ctrl.IsConnected Then
             state = ctrl.GetState()
             If (state.Gamepad.RightTrigger > 180) Then SerialPort1.Write("u")
             If (state.Gamepad.LeftTrigger > 180) Then SerialPort1.Write("d")
             If (state.Gamepad.LeftThumbX < -25000) Then SerialPort1.Write("l")
             If (state.Gamepad.LeftThumbX > 25000) Then SerialPort1.Write("r")
-            If (state.Gamepad.Buttons And SharpDX.XInput.GamepadButtonFlags.LeftShoulder) Then SerialPort1.Write(" ")
-        End If
 
+            If (CTypeDynamic(Of Boolean)(state.Gamepad.Buttons And SharpDX.XInput.GamepadButtonFlags.LeftShoulder)) Then SerialPort1.Write(" ")
+        End If
+#End If
     End Sub
 
     Private Sub pbW_Click(sender As Object, e As EventArgs) Handles pbW.Click
@@ -131,77 +178,38 @@ Motherfucker:
     End Sub
 
     Private Sub frmMain_Load(sender As Object, e As EventArgs) Handles Me.Load
-        ctrl = New SharpDX.XInput.Controller(SharpDX.XInput.UserIndex.One)
-        If ctrl.IsConnected Then
-            tsslErrChar.Text = "检测到手柄"
+#If DisableXInputSupport = 0 Then
+        If My.Settings.EnableGamepadSupport Then
+            ctrl = New SharpDX.XInput.Controller(SharpDX.XInput.UserIndex.Any)
         End If
-        tmrMain.Enabled = True
-    End Sub
-
-    Private Sub 芯动计划ToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles 芯动计划ToolStripMenuItem.Click
-
+#End If
+        tmrMain.Start()
+        tsmConfV1_0.Checked = True
+        tsmConfV1_1.Checked = False
+        nowConf = New Conf_v1_0
     End Sub
 
     Private Sub DataProcess_v1_0(e As SerialDataReceivedEventArgs)
-        Dim buffer(4) As Byte
-        Dim itBuff As Integer
-        On Error GoTo Motherfucker
-        buffer(0) = 0
-        While (buffer(0) < &HF0)
-            buffer(0) = SerialPort1.ReadByte()
-        End While
-        SerialPort1.Read(buffer, 1, 3)
-        SerialPort1.DiscardInBuffer()
-        itBuff = (buffer(1) * &H80) Or (buffer(2))
-        Select Case buffer(0)
-            Case &HF1 'motor duty
-                My.Settings.MotorDuty = Str(itBuff) & "%"
-                Exit Select
-            Case &HF2 'steer angle
-                My.Settings.SteerAngle = Str(itBuff) & "%"
-                If (buffer(3) = 2) Then
-                    My.Settings.SteerAngle = "左" & My.Settings.SteerAngle
-                ElseIf buffer(3) = 1 Then
-                    My.Settings.SteerAngle = "右" & My.Settings.SteerAngle
-                End If
-                Exit Select
-            Case &HFA 'car speed
-                My.Settings.CarSpeed = Str(itBuff) & "r/min"
-                If (buffer(3) = 1) Then '后退
-                    My.Settings.CarSpeed = My.Settings.CarSpeed & "退"
-                End If
-                Exit Select
-            Case &HFB 'echo length
-                My.Settings.EchoLength = Str(itBuff) & "mm"
-                'My.Settings.EchoLength = Str(buffer(1)) & " " & Str(buffer(2)) & "mm"
-                Exit Select
-            Case &HFC 'Yaw
-                My.Settings.Yaw = Str(itBuff) & "deg"
-                If (buffer(3) = 2) Then
-                    My.Settings.Yaw = "左" & My.Settings.Yaw
-                ElseIf buffer(3) = 1 Then
-                    My.Settings.Yaw = "右" & My.Settings.Yaw
-                ElseIf buffer(3) = 0 Then
-                    My.Settings.Yaw = "原位"
-                End If
-                Exit Select
 
-            Case &HFD '错误调试模块
-                Select Case buffer(1)
-                    Case &H1
-                        errcode = "任务B2执行结束"
-                    Case &H2
-                        errcode = "任务B3执行结束"
-                    Case &H3
-                        errcode = "任务D1/2执行结束"
-                    Case &H7F
-                        errcode = "紧急制动"
-                    Case Else
-                        errcode = "未知错误"
-                End Select
-            Case Else
-                errcode = "Error receiving " & Hex(buffer(0))
-        End Select
-Motherfucker:
+    End Sub
+
+    Private Sub tsmConfV1_0_Click(sender As Object, e As EventArgs) Handles tsmConfV1_0.Click
+        tsmConfV1_0.Checked = True
+        tsmConfV1_1.Checked = False
+        nowConf = New Conf_v1_0
+    End Sub
+
+    Private Sub tsmConfV1_1_Click(sender As Object, e As EventArgs) Handles tsmConfV1_1.Click
+        tsmConfV1_0.Checked = False
+        tsmConfV1_1.Checked = True
+        nowConf = New Conf_v1_1
+    End Sub
+
+    Private Sub GamepadCtrl()
+
+    End Sub
+
+    Private Sub 显示主窗口OToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles 显示主窗口OToolStripMenuItem.Click
+        Show()
     End Sub
 End Class

@@ -142,4 +142,13 @@
   <data name="左转向灯_按下" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\左转向灯 按下.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="strSerialDisabled" xml:space="preserve">
+    <value>串口通信关闭</value>
+  </data>
+  <data name="strSerialRunning" xml:space="preserve">
+    <value>串口通信正常</value>
+  </data>
+  <data name="strSerialNotFound" xml:space="preserve">
+    <value>未发现串口</value>
+  </data>
 </root>

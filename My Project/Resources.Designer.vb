@@ -26,7 +26,7 @@ Namespace My.Resources
      Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
      Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute(),  _
      Global.Microsoft.VisualBasic.HideModuleNameAttribute()>  _
-    Friend Module Resources
+    Public Module Resources
         
         Private resourceMan As Global.System.Resources.ResourceManager
         
@@ -36,7 +36,7 @@ Namespace My.Resources
         '''  返回此类使用的缓存的 ResourceManager 实例。
         '''</summary>
         <Global.System.ComponentModel.EditorBrowsableAttribute(Global.System.ComponentModel.EditorBrowsableState.Advanced)>  _
-        Friend ReadOnly Property ResourceManager() As Global.System.Resources.ResourceManager
+        Public ReadOnly Property ResourceManager() As Global.System.Resources.ResourceManager
             Get
                 If Object.ReferenceEquals(resourceMan, Nothing) Then
                     Dim temp As Global.System.Resources.ResourceManager = New Global.System.Resources.ResourceManager("SerialApp.Resources", GetType(Resources).Assembly)
@@ -51,7 +51,7 @@ Namespace My.Resources
         '''  重写当前线程的 CurrentUICulture 属性。
         '''</summary>
         <Global.System.ComponentModel.EditorBrowsableAttribute(Global.System.ComponentModel.EditorBrowsableState.Advanced)>  _
-        Friend Property Culture() As Global.System.Globalization.CultureInfo
+        Public Property Culture() As Global.System.Globalization.CultureInfo
             Get
                 Return resourceCulture
             End Get
@@ -61,9 +61,36 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  查找类似 串口通信关闭 的本地化字符串。
+        '''</summary>
+        Public ReadOnly Property strSerialDisabled() As String
+            Get
+                Return ResourceManager.GetString("strSerialDisabled", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  查找类似 未发现串口 的本地化字符串。
+        '''</summary>
+        Public ReadOnly Property strSerialNotFound() As String
+            Get
+                Return ResourceManager.GetString("strSerialNotFound", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  查找类似 串口通信正常 的本地化字符串。
+        '''</summary>
+        Public ReadOnly Property strSerialRunning() As String
+            Get
+                Return ResourceManager.GetString("strSerialRunning", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  查找 System.Drawing.Bitmap 类型的本地化资源。
         '''</summary>
-        Friend ReadOnly Property 前箭头() As System.Drawing.Bitmap
+        Public ReadOnly Property 前箭头() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("前箭头", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
@@ -73,7 +100,7 @@ Namespace My.Resources
         '''<summary>
         '''  查找 System.Drawing.Bitmap 类型的本地化资源。
         '''</summary>
-        Friend ReadOnly Property 前箭头_按下() As System.Drawing.Bitmap
+        Public ReadOnly Property 前箭头_按下() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("前箭头_按下", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
@@ -83,7 +110,7 @@ Namespace My.Resources
         '''<summary>
         '''  查找 System.Drawing.Bitmap 类型的本地化资源。
         '''</summary>
-        Friend ReadOnly Property 右转向灯() As System.Drawing.Bitmap
+        Public ReadOnly Property 右转向灯() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("右转向灯", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
@@ -93,7 +120,7 @@ Namespace My.Resources
         '''<summary>
         '''  查找 System.Drawing.Bitmap 类型的本地化资源。
         '''</summary>
-        Friend ReadOnly Property 右转向灯_按下() As System.Drawing.Bitmap
+        Public ReadOnly Property 右转向灯_按下() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("右转向灯_按下", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
@@ -103,7 +130,7 @@ Namespace My.Resources
         '''<summary>
         '''  查找 System.Drawing.Bitmap 类型的本地化资源。
         '''</summary>
-        Friend ReadOnly Property 后箭头() As System.Drawing.Bitmap
+        Public ReadOnly Property 后箭头() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("后箭头", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
@@ -113,7 +140,7 @@ Namespace My.Resources
         '''<summary>
         '''  查找 System.Drawing.Bitmap 类型的本地化资源。
         '''</summary>
-        Friend ReadOnly Property 后箭头_按下() As System.Drawing.Bitmap
+        Public ReadOnly Property 后箭头_按下() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("后箭头_按下", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
@@ -123,7 +150,7 @@ Namespace My.Resources
         '''<summary>
         '''  查找 System.Drawing.Bitmap 类型的本地化资源。
         '''</summary>
-        Friend ReadOnly Property 左转向灯() As System.Drawing.Bitmap
+        Public ReadOnly Property 左转向灯() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("左转向灯", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
@@ -133,7 +160,7 @@ Namespace My.Resources
         '''<summary>
         '''  查找 System.Drawing.Bitmap 类型的本地化资源。
         '''</summary>
-        Friend ReadOnly Property 左转向灯_按下() As System.Drawing.Bitmap
+        Public ReadOnly Property 左转向灯_按下() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("左转向灯_按下", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)

@@ -20,5 +20,17 @@
     <Setting Name="Yaw" Type="System.String" Scope="User">
       <Value Profile="(Default)">未知</Value>
     </Setting>
+    <Setting Name="EnableWindowsFormsHighDpiAutoResizing" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="fntHUD" Type="System.Drawing.Font" Scope="User">
+      <Value Profile="(Default)">宋体, 15pt</Value>
+    </Setting>
+    <Setting Name="ErrorMsg" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="EnableGamepadSupport" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
